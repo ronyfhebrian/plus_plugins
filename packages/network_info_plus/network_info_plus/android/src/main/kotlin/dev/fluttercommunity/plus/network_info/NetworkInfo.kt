@@ -89,7 +89,6 @@ internal class NetworkInfo(
             @Suppress("DEPRECATION")
             val dhcpInfo = wifiManager.dhcpInfo
             val gatewayIPInt = dhcpInfo?.gateway
-            Log.w("my_log_tag", "depercate, gatewayIPInt: $gatewayIPInt");
             gatewayIPInt?.let { formatIPAddress(it) }
         }
     }
