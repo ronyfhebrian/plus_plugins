@@ -100,15 +100,6 @@ internal class NetworkInfo(
     
         return gatewayIPInt?.let { formatIPAddress(it) }
     }
-    
-    private fun formatIPAddress(ip: Int): String {
-        return listOf(
-            ip and 0xFF,
-            (ip shr 8) and 0xFF,
-            (ip shr 16) and 0xFF,
-            (ip shr 24) and 0xFF
-        ).joinToString(".")
-    }
 
     private fun formatIPAddress(intIP: Int): String =
         String.format(
