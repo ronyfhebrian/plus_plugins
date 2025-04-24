@@ -79,7 +79,7 @@ internal class NetworkInfo(
         return null
     }
 
-    fun getGatewayIpAddress(context: Context): String? {
+    fun getGatewayIPAddress(context: Context): String? {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
     
