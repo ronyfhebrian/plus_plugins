@@ -79,18 +79,35 @@ internal class NetworkInfo(
         return null
     }
 
-    fun getGatewayIPAddress(): String? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val network = connectivityManager?.allNetworks?.first() // but allNetworks is deprecated on API level 31
-            val linkAddresses = connectivityManager?.getLinkProperties(network);
-            val dhcpServer = linkAddresses?.dhcpServerAddress?.hostAddress
-            dhcpServer
-        } else {
-            @Suppress("DEPRECATION")
-            val dhcpInfo = wifiManager.dhcpInfo
-            val gatewayIPInt = dhcpInfo?.gateway
-            gatewayIPInt?.let { formatIPAddress(it) }
+    fun getGatewayIpAddress(context: Context): String? {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
+    
+        // Android 12+ (API 31+) - Try to get gateway from active network first
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val linkProperties = connectivityManager?.getLinkProperties(connectivityManager.activeNetwork)
+            val dhcpServer = linkProperties?.dhcpServerAddress?.hostAddress
+    
+            if (!dhcpServer.isNullOrEmpty()) {
+                return dhcpServer
+            }
         }
+    
+        // Fallback: Use WifiManager for all versions
+        @Suppress("DEPRECATION")
+        val dhcpInfo = wifiManager?.dhcpInfo
+        val gatewayIPInt = dhcpInfo?.gateway
+    
+        return gatewayIPInt?.let { formatIPAddress(it) }
+    }
+    
+    private fun formatIPAddress(ip: Int): String {
+        return listOf(
+            ip and 0xFF,
+            (ip shr 8) and 0xFF,
+            (ip shr 16) and 0xFF,
+            (ip shr 24) and 0xFF
+        ).joinToString(".")
     }
 
     private fun formatIPAddress(intIP: Int): String =
