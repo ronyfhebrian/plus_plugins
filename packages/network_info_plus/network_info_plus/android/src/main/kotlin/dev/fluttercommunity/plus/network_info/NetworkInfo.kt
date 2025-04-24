@@ -81,16 +81,15 @@ internal class NetworkInfo(
 
     fun getGatewayIPAddress(): String? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val linkAddresses =
-                connectivityManager?.getLinkProperties(connectivityManager.activeNetwork)
+            val network = connectivityManager?.allNetworks?.first() // but allNetworks is deprecated on API level 31
+            val linkAddresses = connectivityManager?.getLinkProperties(network);
             val dhcpServer = linkAddresses?.dhcpServerAddress?.hostAddress
-
             dhcpServer
         } else {
             @Suppress("DEPRECATION")
             val dhcpInfo = wifiManager.dhcpInfo
             val gatewayIPInt = dhcpInfo?.gateway
-
+            Log.w("my_log_tag", "depercate, gatewayIPInt: $gatewayIPInt");
             gatewayIPInt?.let { formatIPAddress(it) }
         }
     }
